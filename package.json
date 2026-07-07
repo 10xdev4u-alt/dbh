@@ -1,0 +1,26 @@
+{
+  "name": "dbh",
+  "version": "0.1.0",
+  "description": "DeepBridge Harness — CLI for managing DeepBridge proxy deployments",
+  "bin": {
+    "dbh": "./bin/dbh"
+  },
+  "scripts": {
+    "start": "node bin/dbh",
+    "postinstall": "node -e \"try{require('fs').chmodSync('bin/dbh',0o755)}catch(e){}\""
+  },
+  "dependencies": {
+    "chalk": "^5.3.0",
+    "commander": "^12.0.0",
+    "enquirer": "^2.4.1",
+    "cli-table3": "^0.6.5",
+    "cli-progress": "^3.12.0",
+    "conf": "^12.0.0",
+    "semver": "^7.6.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "type": "module",
+  "license": "MIT"
+}

@@ -1,0 +1,18 @@
+#!/usr/bin/env node
+'use strict';
+
+import { fileURLToPath } from 'node:url';
+import { dirname, resolve } from 'node:path';
+import { createRequire } from 'node:module';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const require = createRequire(import.meta.url);
+
+// Bootstrap: ensure we can resolve local modules
+process.env.NODE_PATH = resolve(__dirname, '..', 'node_modules');
+require('module').Module._initPaths();
+
+import('../src/main.js').then(mod => mod.run()).catch(err => {
+  console.error('dbh: failed to start —', err.message);
+  process.exit(1);
+});
