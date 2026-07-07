@@ -245,8 +245,8 @@ export async function start() {
         await cmdUrl();
         break;
       case 'logs': {
-        const { logs } = await import('../lib/docker.js');
-        const { isRunning } = await import('../lib/docker.js');
+        const { logs, isRunning: dockerRunning } = await import('../lib/docker.js');
+        const isRunning = dockerRunning;
         if (!isRunning()) {
           console.log(`  ${c.yellow('⚠')} Not running.\n`);
           break;
@@ -261,8 +261,8 @@ export async function start() {
         break;
       }
       case 'up': {
-        const { up } = await import('../lib/docker.js');
         try {
+          const { up } = await import('../lib/docker.js');
           up({ detach: true });
           console.log(`  ${badge.ok} ${c.green('started')}\n`);
         } catch (err) {
@@ -271,8 +271,8 @@ export async function start() {
         break;
       }
       case 'down': {
-        const { down } = await import('../lib/docker.js');
         try {
+          const { down } = await import('../lib/docker.js');
           down();
           console.log(`  ${badge.ok} ${c.accent('stopped')}\n`);
         } catch (err) {
@@ -281,8 +281,8 @@ export async function start() {
         break;
       }
       case 'restart': {
-        const { restart } = await import('../lib/docker.js');
         try {
+          const { restart } = await import('../lib/docker.js');
           restart();
           console.log(`  ${badge.ok} ${c.green('restarted')}\n`);
         } catch (err) {
@@ -304,22 +304,22 @@ export async function start() {
           { type: 'input', name: 'email', message: 'Email', validate: v => v.includes('@') ? true : 'valid email required' },
           { type: 'password', name: 'password', message: 'Password' },
         ]);
-        const { readEnv, writeEnv, parseAccounts } = await import('../lib/config.js');
-        const env = readEnv();
-        const accounts = parseAccounts(env.DEEPSEEK_ACCOUNTS);
+        const { readEnv: cfgRead, writeEnv: cfgWrite, parseAccounts: cfgParse } = await import('../lib/config.js');
+        const env = cfgRead();
+        const accounts = cfgParse(env.DEEPSEEK_ACCOUNTS);
         accounts.push({ email, password: password || email });
-        writeEnv({ DEEPSEEK_ACCOUNTS: JSON.stringify(accounts) });
+        cfgWrite({ DEEPSEEK_ACCOUNTS: JSON.stringify(accounts) });
         console.log(`  ${badge.ok} ${c.green('account added — restart to apply')}\n`);
         break;
       }
       case 'key add': {
         const { default: enquirer } = await import('enquirer');
         const { key } = await enquirer.prompt({ type: 'input', name: 'key', message: 'API key' });
-        const { readEnv, writeEnv, parseApiKeys } = await import('../lib/config.js');
-        const env = readEnv();
-        const keys = parseApiKeys(env.API_KEYS);
+        const { readEnv: cfgRead2, writeEnv: cfgWrite2, parseApiKeys: cfgParseKeys } = await import('../lib/config.js');
+        const env = cfgRead2();
+        const keys = cfgParseKeys(env.API_KEYS);
         keys.push(key.trim());
-        writeEnv({ API_KEYS: JSON.stringify(keys) });
+        cfgWrite2({ API_KEYS: JSON.stringify(keys) });
         console.log(`  ${badge.ok} ${c.green('key added — restart to apply')}\n`);
         break;
       }

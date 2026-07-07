@@ -121,7 +121,8 @@ export function setProxyDir(dir) {
 }
 
 // ── Detect proxy directory ────────────────────────────────
-export function findProxyDir(start = process.cwd()) {
+export function findProxyDir(start = process.cwd(), depth = 0) {
+  if (depth > 10) return null;
   // Check if current dir has docker-compose.yml
   const candidates = [
     resolve(start, 'docker-compose.yml'),
@@ -133,7 +134,7 @@ export function findProxyDir(start = process.cwd()) {
   }
   // Check parent
   const parent = resolve(start, '..');
-  if (parent !== start) return findProxyDir(parent);
+  if (parent !== start) return findProxyDir(parent, depth + 1);
   return null;
 }
 

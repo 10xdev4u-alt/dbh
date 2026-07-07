@@ -13,12 +13,6 @@ function apiKey() {
   return keys[0] || null;
 }
 
-function parseApiKeys(raw) {
-  if (!raw) return [];
-  try { return JSON.parse(raw).map(k => String(k).trim()).filter(Boolean); } catch {}
-  return raw.split(',').map(k => k.trim()).filter(Boolean);
-}
-
 function authHeaders() {
   const key = apiKey();
   return key ? { Authorization: `Bearer ${key}` } : {};

@@ -2,17 +2,22 @@ import { c } from '../ui/colors.js';
 import { readEnv, findProxyDir } from './config.js';
 
 // ── Detect proxy URL ─────────────────────────────────────
-export function getProxyUrl() {
+async function detectDockerPort() {
+  const { execSync } = await import('node:child_process');
+  const out = execSync('docker port deepbridge 3002/tcp 2>/dev/null || echo ""', { stdio: 'pipe', timeout: 5000, encoding: 'utf8' });
+  const match = out.trim().match(/0\.0\.0\.0:(\d+)/);
+  if (match) return `http://localhost:${match[1]}`;
+  return null;
+}
+
+export async function getProxyUrl() {
   // Priority: env > docker > localhost
   const env = readEnv(findProxyDir() || process.cwd());
   if (env.PROXY_URL) return env.PROXY_URL.replace(/\/+$/, '');
 
-  // Check if Docker is running and get port
   try {
-    const { execSync } = await import('node:child_process');
-    const out = execSync('docker port deepbridge 3002/tcp 2>/dev/null || echo ""', { stdio: 'pipe', timeout: 5000, encoding: 'utf8' });
-    const match = out.trim().match(/0\.0\.0\.0:(\d+)/);
-    if (match) return `http://localhost:${match[1]}`;
+    const url = await detectDockerPort();
+    if (url) return url;
   } catch {}
 
   return 'http://localhost:3002';
@@ -21,7 +26,11 @@ export function getProxyUrl() {
 // Lazy cache for proxy URL
 let _proxyUrl = null;
 export function getCachedProxyUrl() {
-  if (!_proxyUrl) _proxyUrl = getProxyUrl();
+  if (!_proxyUrl) {
+    // Kick off async resolution but cache synchronously for subsequent calls
+    getProxyUrl().then(url => { _proxyUrl = url; }).catch(() => {});
+    _proxyUrl = 'http://localhost:3002';
+  }
   return _proxyUrl;
 }
 

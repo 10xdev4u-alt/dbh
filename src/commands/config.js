@@ -52,16 +52,15 @@ async function set(key, value) {
 
 // ── Edit config in editor ─────────────────────────────────
 async function edit() {
-  import('node:child_process').then(({ execSync }) => {
-    const editor = process.env.EDITOR || process.env.VISUAL || 'nano';
-    try {
-      execSync(`${editor} .env`, { stdio: 'inherit', cwd: process.cwd() });
-      console.log(`\n  ${badge.ok} ${c.green('Saved')}`);
-      console.log(`  ${c.dim('Restart to apply:')} ${c.accent('dbh restart')}\n`);
-    } catch (err) {
-      console.error(`\n  ${c.red('✘')} Editor error: ${err.message}\n`);
-    }
-  });
+  const { execSync } = await import('node:child_process');
+  const editor = process.env.EDITOR || process.env.VISUAL || 'nano';
+  try {
+    execSync(`${editor} .env`, { stdio: 'inherit', cwd: process.cwd() });
+    console.log(`\n  ${badge.ok} ${c.green('Saved')}`);
+    console.log(`  ${c.dim('Restart to apply:')} ${c.accent('dbh restart')}\n`);
+  } catch (err) {
+    console.error(`\n  ${c.red('✘')} Editor error: ${err.message}\n`);
+  }
 }
 
 export default { show, set, edit };
