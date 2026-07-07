@@ -139,6 +139,33 @@ export async function run() {
   program.command('doctor').description('Run diagnostics').action(async () => { const cmd = await loadCmd('doctor'); await cmd.handler(); });
   program.command('repl').description('Interactive REPL mode').action(async () => { const mod = await import('./repl/index.js'); await mod.start(); });
 
+  program
+    .command('completion')
+    .description('Generate shell completion')
+    .argument('[shell]', 'bash or zsh', 'bash')
+    .action(async (shell) => { const cmd = await loadCmd('completion'); await cmd.handler(shell); });
+
+  program
+    .command('install')
+    .description('Install shell completion')
+    .argument('[shell]', 'bash or zsh', 'bash')
+    .action(async (shell) => {
+      const { handler } = await loadCmd('completion');
+      const { execSync } = await import('node:child_process');
+      const { homedir } = await import('node:os');
+      if (shell === 'bash') {
+        const out = await handler(shell);
+        const bashrc = require('node:path').join(homedir(), '.bashrc');
+        require('node:fs').appendFileSync(bashrc, '\n' + out + '\n');
+        console.log('  ${c.green('✔')} Completion installed for bash. Restart your shell.');
+      } else if (shell === 'zsh') {
+        const out = await handler(shell);
+        const zshrc = require('node:path').join(homedir(), '.zshrc');
+        require('node:fs').appendFileSync(zshrc, '\n' + out + '\n');
+        console.log('  ${c.green('✔')} Completion installed for zsh. Restart your shell.');
+      }
+    });
+
   // ── Default: enter REPL if no args ────────────────────
   if (process.argv.length <= 2) {
     try {
