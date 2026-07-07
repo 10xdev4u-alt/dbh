@@ -55,7 +55,38 @@ export async function run() {
   program
     .command('health')
     .description('Quick health check')
-    .action(async () => { const cmd = await loadCmd('health'); await cmd.handler(); });
+    .option('--json', 'JSON output')
+    .action(async (opts) => { const cmd = await loadCmd('health'); await cmd.handler(opts); });
+
+  program
+    .command('ping')
+    .description('Latency check')
+    .option('--json', 'JSON output')
+    .action(async (opts) => { const cmd = await loadCmd('ping'); await cmd.handler(opts); });
+
+  program
+    .command('info')
+    .description('System info')
+    .option('--json', 'JSON output')
+    .action(async (opts) => { const cmd = await loadCmd('info'); await cmd.handler(opts); });
+
+  program
+    .command('whoami')
+    .description('Show current identity')
+    .option('--json', 'JSON output')
+    .action(async (opts) => { const cmd = await loadCmd('whoami'); await cmd.handler(opts); });
+
+  program
+    .command('env')
+    .description('Show environment variables')
+    .option('--json', 'JSON output')
+    .action(async (opts) => { const cmd = await loadCmd('env'); await cmd.handler(opts); });
+
+  program
+    .command('exec')
+    .description('Execute command in container')
+    .argument('<cmd...>', 'Command to run')
+    .action(async (args) => { const cmd = await loadCmd('exec'); await cmd.handler(args); });
 
   program
     .command('url')
