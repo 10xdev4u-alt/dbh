@@ -1,4 +1,4 @@
-import { c } from '../ui/colors.js';
+
 
 const BASH_COMPLETION = `
 _dbh_completions() {
