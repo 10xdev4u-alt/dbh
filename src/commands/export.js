@@ -1,4 +1,4 @@
-import { readFileSync, existsSync } from 'node:fs';
+import { readFileSync, writeFileSync, existsSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { c } from '../ui/colors.js';
 import { getCurrentHost, getCurrentUrl, getCurrentKey } from '../lib/host.js';
@@ -36,7 +36,6 @@ export async function handler({ format = 'env', output, json } = {}) {
     ].filter(Boolean);
     const out = lines.join('\n') + '\n';
     if (output) {
-      const { writeFileSync } = await import('node:fs');
       writeFileSync(output, out, 'utf8');
       console.log(c.green(`✓ Exported to ${output}`));
     } else {
