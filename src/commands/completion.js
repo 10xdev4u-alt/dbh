@@ -115,11 +115,10 @@ _dbh "$@"
 
 export async function handler(shell = 'bash') {
   if (shell === 'bash') {
-    console.log(BASH_COMPLETION.trim());
+    return BASH_COMPLETION.trim();
   } else if (shell === 'zsh') {
-    console.log(ZSH_COMPLETION.trim());
+    return ZSH_COMPLETION.trim();
   } else {
-    console.error(`  ${c.red('✘')} Unknown shell: ${shell}. Use bash or zsh.`);
-    process.exit(1);
+    throw new Error(`Unknown shell: ${shell}. Use bash or zsh.`);
   }
 }

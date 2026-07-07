@@ -1,6 +1,6 @@
 import { Command } from 'commander';
-import { readFileSync } from 'node:fs';
-import { resolve, dirname } from 'node:path';
+import { readFileSync, appendFileSync } from 'node:fs';
+import { resolve, dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -107,6 +107,8 @@ export async function run() {
   host.command('add').description('Add a host').action(async () => { const cmd = await loadCmd('use'); await cmd.add(); });
   host.command('remove').alias('rm').description('Remove a host').argument('<name>').action(async (n) => { const cmd = await loadCmd('use'); await cmd.remove(n); });
   host.command('switch').alias('select').description('Switch active host').argument('<name>').action(async (n) => { const cmd = await loadCmd('use'); await cmd.switchHost(n); });
+  host.command('rename').description('Rename a host').argument('<old>').argument('<new>').action(async (o, n) => { const cmd = await loadCmd('use'); await cmd.rename(o, n); });
+  host.command('default').description('Set default host').argument('<name>').action(async (n) => { const cmd = await loadCmd('use'); await cmd.setDefault(n); });
 
   // ── Init ──────────────────────────────────────────────
   program
@@ -151,18 +153,17 @@ export async function run() {
     .argument('[shell]', 'bash or zsh', 'bash')
     .action(async (shell) => {
       const { handler } = await loadCmd('completion');
-      const { execSync } = await import('node:child_process');
       const { homedir } = await import('node:os');
+      const bashrc = join(homedir(), '.bashrc');
+      const zshrc = join(homedir(), '.zshrc');
       if (shell === 'bash') {
         const out = await handler(shell);
-        const bashrc = require('node:path').join(homedir(), '.bashrc');
-        require('node:fs').appendFileSync(bashrc, '\n' + out + '\n');
-        console.log('  ${c.green('✔')} Completion installed for bash. Restart your shell.');
+        appendFileSync(bashrc, '\n' + out + '\n');
+        console.log('Completion installed for bash. Restart your shell.');
       } else if (shell === 'zsh') {
         const out = await handler(shell);
-        const zshrc = require('node:path').join(homedir(), '.zshrc');
-        require('node:fs').appendFileSync(zshrc, '\n' + out + '\n');
-        console.log('  ${c.green('✔')} Completion installed for zsh. Restart your shell.');
+        appendFileSync(zshrc, '\n' + out + '\n');
+        console.log('Completion installed for zsh. Restart your shell.');
       }
     });
 
