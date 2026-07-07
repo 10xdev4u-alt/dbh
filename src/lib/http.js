@@ -1,3 +1,4 @@
+import { execSync } from 'node:child_process';
 import { c } from '../ui/colors.js';
 import { readEnv, findProxyDir } from './config.js';
 import { getCurrentUrl, getCurrentKey } from './host.js';
@@ -23,7 +24,6 @@ export function getProxyUrl() {
   if (env.PROXY_URL) return env.PROXY_URL.replace(/\/+$/, '');
 
   try {
-    const { execSync } = require('child_process');
     const out = execSync('docker port deepbridge 3002/tcp 2>/dev/null || echo ""', { stdio: 'pipe', timeout: 5000, encoding: 'utf8' });
     const match = out.trim().match(/0\.0\.0\.0:(\d+)/);
     if (match) return `http://localhost:${match[1]}`;
