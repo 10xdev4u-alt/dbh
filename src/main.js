@@ -89,6 +89,26 @@ export async function run() {
     .action(async (args) => { const cmd = await loadCmd('exec'); await cmd.handler(args); });
 
   program
+    .command('top')
+    .description('Live proxy metrics')
+    .option('--json', 'JSON output')
+    .action(async (opts) => { const cmd = await loadCmd('top'); await cmd.handler(opts); });
+
+  program
+    .command('shell')
+    .description('Interactive shell in container')
+    .option('--shell <shell>', 'Shell to use', 'sh')
+    .action(async (opts) => { const cmd = await loadCmd('shell'); await cmd.handler(opts); });
+
+  program
+    .command('export')
+    .description('Export configuration')
+    .option('--format <fmt>', 'Output format (env)', 'env')
+    .option('-o, --output <file>', 'Write to file')
+    .option('--json', 'JSON output')
+    .action(async (opts) => { const cmd = await loadCmd('export'); await cmd.handler(opts); });
+
+  program
     .command('url')
     .description('Get tunnel URL')
     .action(async () => { const cmd = await loadCmd('url'); await cmd.handler(); });
