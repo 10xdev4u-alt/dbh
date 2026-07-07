@@ -102,4 +102,25 @@ export async function interactive() {
   await switchHost(name);
 }
 
-export default { list, switchHost, add, remove, interactive };
+export async function rename(oldName, newName) {
+  try {
+    const { renameHost } = await import('../lib/host.js');
+    renameHost(oldName, newName);
+    console.log(`  ${badge.ok} ${c.accent(`Renamed ${oldName} → ${newName}`)}\n`);
+  } catch (err) {
+    console.error(`  ${c.red('✘')} ${err.message}\n`);
+    process.exit(1);
+  }
+}
+
+export async function setDefault(name) {
+  try {
+    await switchHost(name);
+    console.log(`  ${c.dim('Default host set to:')} ${c.accent(name)}\n`);
+  } catch (err) {
+    console.error(`  ${c.red('✘')} ${err.message}\n`);
+    process.exit(1);
+  }
+}
+
+export default { list, switchHost, add, remove, interactive, rename, setDefault };
