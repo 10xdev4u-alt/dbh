@@ -1,34 +1,32 @@
-
-
 const BASH_COMPLETION = `
 _dbh_completions() {
   local cur prev opts
   COMPREPLY=()
-  cur="${COMP_WORDS[COMP_CWORD]}"
-  prev="${COMP_WORDS[COMP_CWORD-1]}"
+  cur="\${COMP_WORDS[COMP_CWORD]}"
+  prev="\${COMP_WORDS[COMP_CWORD-1]}"
   opts="up down logs restart status health url models metrics usage plugins chat tunnel webhook use init account key config backup update doctor repl help"
 
-  if [[ ${cur} == -* ]] ; then
-    COMPREPLY=( $(compgen -W "--help --version --json --quiet" -- ${cur}) )
+  if [[ \${cur} == -* ]] ; then
+    COMPREPLY=( $(compgen -W "--help --version --json --quiet" -- \${cur}) )
     return 0
   fi
 
-  case "${prev}" in
+  case "\${prev}" in
     account|key|tunnel|webhook|use|config)
       local sub="list add remove rm test switch select ls"
-      COMPREPLY=( $(compgen -W "${sub}" -- ${cur}) )
+      COMPREPLY=( $(compgen -W "\${sub}" -- \${cur}) )
       return 0
       ;;
     logs)
-      COMPREPLY=( $(compgen -W "-f --follow -n --lines" -- ${cur}) )
+      COMPREPLY=( $(compgen -W "-f --follow -n --lines" -- \${cur}) )
       return 0
       ;;
     chat)
-      COMPREPLY=( $(compgen -W "-m --model" -- ${cur}) )
+      COMPREPLY=( $(compgen -W "-m --model" -- \${cur}) )
       return 0
       ;;
     *)
-      COMPREPLY=( $(compgen -W "${opts}" -- ${cur}) )
+      COMPREPLY=( $(compgen -W "\${opts}" -- \${cur}) )
       return 0
       ;;
   esac
@@ -83,12 +81,12 @@ _dbh() {
     '1: :->command' \\
     '*:: :->args'
 
-  case $state in
+  case \$state in
     command)
       _dbh_commands
       ;;
     args)
-      case $words[1] in
+      case \$words[1] in
         account|key|tunnel|webhook|config)
           local -a sub
           sub=('list:List' 'add:Add' 'remove:Remove' 'rm:Remove' 'test:Test' 'ls:List' 'switch:Switch' 'select:Select')
